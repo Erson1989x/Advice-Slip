@@ -1,0 +1,51 @@
+.favorite-advices-modal-container {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+.favorite-advices-modal-card {
+    position: absolute;
+    max-width: 400px;
+    background-color: var(--lightGray);
+    border-radius: 20px;
+    margin-top: 80px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 24px;
+    z-index: 200;
+}
+
+.favorite-advices-modal-title {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.favorite-advices-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.delete-advice-button {
+    background-color: var(--lightGreen);
+    color: var(--darkBlue);
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    margin: 4px 0 4px 0;
+    align-items: center;
+}
