@@ -1,0 +1,11 @@
+/* --- Advice Card --- */
+
+.app-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding-left: 24px;
+    padding-right: 24px;
+    background-color: var(--darkBlue);
+  }

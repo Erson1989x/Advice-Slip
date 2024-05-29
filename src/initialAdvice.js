@@ -9,3 +9,4 @@ export const initialAdvice = {
         const updatedAdvices = favoriteAdvices.filter(advice => advice.id !== adviceId);
         setFavoriteAdvices(updatedAdvices);
       };
+

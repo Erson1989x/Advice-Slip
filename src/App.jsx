@@ -1,33 +1,25 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import dice from './assets/icon-dice.svg';
-import { initialAdvice } from './initialAdvice';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { initialAdvice,} from './initialAdvice';
 import FavoriteAdvicesModal from './components/FavoriteAdvicesModal/FavoriteAdvicesModal';
 import { deleteAdvice } from './initialAdvice';
 import CustomAdvices from '../src/components/CostumAdvices/CostumAdvices';
+import AdviceCard from './components/AdviceCard/AdviceCard';
 
 const App = () => {
   const [advice, setAdvice] = useState(initialAdvice); // hook
   const [isLoading, setIsLoading] = useState(false);
-  const [favoriteAdvices, setFavoriteAdvices] = useState(() => {
-    const saveFavoriteAdvices = localStorage.getItem('favoriteAdvices');
-    return saveFavoriteAdvices ? JSON.parse(saveFavoriteAdvices) : [];
-  });
+
+  const favoriteAdvicesFromLocalStorage = JSON.parse(localStorage.getItem('favoriteAdvicesLS'));
+  const initialFavoriteAdvices = favoriteAdvicesFromLocalStorage === null ? [] : favoriteAdvicesFromLocalStorage;
+
+  const [favoriteAdvices, setFavoriteAdvices] = useState(initialFavoriteAdvices);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [lastAddedAdvice, setLastAddedAdvice] = useState(null);
+;
 
 
-  useEffect(() => {
-    localStorage.setItem('favoriteAdvices', JSON.stringify(favoriteAdvices));
-  }, [favoriteAdvices]);
 
   const addCustomAdvice = (customAdviceId, customAdviceContent) => {
-    if (customAdviceContent.trim().length < 3) {
-      alert('Content must be at least 3 characters long.');
-      return;
-    }
     const newAdvice = {
       id: customAdviceId.toString(),
       content: customAdviceContent,
@@ -35,7 +27,6 @@ const App = () => {
     };
     setAdvice(newAdvice);
     setFavoriteAdvices((prevAdvices) => [...prevAdvices, newAdvice]);
-    setLastAddedAdvice(newAdvice);
     }
   
 
@@ -50,6 +41,7 @@ const App = () => {
 
   const generateAdvice = async () => {
     setIsLoading(true);
+    console.log('generateAdvice');
     
     try {
       // block-scoped variables
@@ -79,7 +71,7 @@ const App = () => {
       // 2. modificam noul obiect / array cum vrem noi
       const currentDate = new Date();
       // to do: formateaza currentDate la ceva de genul '24 May 2024 21:23'
-      const formattedDate = currentDate.toLocaleDateString('en-RO', { day: '2-digit', month: 'long', year: 'numeric' });
+      const formattedDate = currentDate.toDateString('en-RO', { day: '2-digit', month: 'long', year: 'numeric' });
       const newAdvice = {
         ...advice,
         addedAt: formattedDate
@@ -87,11 +79,13 @@ const App = () => {
       newFavoriteAdvices.push(newAdvice);
       // 3. adaugam noul obiect / array in state
       setFavoriteAdvices(newFavoriteAdvices);
+      localStorage.setItem('favoriteAdvicesLS', JSON.stringify(newFavoriteAdvices));
     } else {
       // eliminam advice-ul de la favorite
       const newFavoriteAdvices = [ ...favoriteAdvices ];
       newFavoriteAdvices.splice(indexOfCurrentAdvice, 1);
       setFavoriteAdvices(newFavoriteAdvices);
+      localStorage.setItem('favoriteAdvicesLS', JSON.stringify(newFavoriteAdvices));
     }
   }
 
@@ -111,28 +105,7 @@ const App = () => {
 
         {modalIsOpen === true ? (<FavoriteAdvicesModal closeModal={handleCloseModal} advices={favoriteAdvices} deleteAdvice={handleDeleteAdvice} />) : null}
         <CustomAdvices addCustomAdvice={addCustomAdvice} />
-        <div className='advice-card-container'>
-          <button onClick={handleAddToFavorites} className='add-to-favorites-button'>
-            {currentAdviceIsAddedToFavorites === true ? (<FavoriteIcon sx={{ color: 'var(--lightGreen)' }} />) : (<FavoriteBorderIcon sx={{ color: 'var(--lightGreen)' }} />) }
-          </button>
-
-          <p className='advice-id'> ADVICE #{advice.id} </p>
-          <p className='advice-content'> “{advice.content}” </p>
-
-          {/* --- separator --- */}
-          <div className='separator-container'>
-            <hr className='horizontal-line' />
-            <div className='vertical-lines-container'>
-              <div className='vertical-line' />
-              <div className='vertical-line' />
-            </div>
-            <hr className='horizontal-line' />
-          </div>
-
-          <button disabled={isLoading === true ? true : false} onClick={generateAdvice} className='generate-advice-button'>
-            {isLoading === true ? (<div className="spinner"></div>) : (<img src={dice} />)}
-          </button>
-        </div>
+        <AdviceCard generateAdvice={generateAdvice} handleAddToFavorites={handleAddToFavorites} advice={advice} currentAdviceIsAddedToFavorites={currentAdviceIsAddedToFavorites} isLoading={isLoading} />
     </div>
   );
 }
